@@ -1,5 +1,5 @@
-//Declaration des variables
-let apiUrl = "http://localhost:3000/api/products";
+// Declaration des variables
+const apiUrl = "http://localhost:3000/api/products";
 let affichage = "";
 
 // Recuperation des donnees de l'API
@@ -7,10 +7,11 @@ fetch(apiUrl)
 
     .then((response) => response.json())
 
-    //
+    // 
     .then((data) => {
         console.table(data);
 
+        // Affichage des produits
         for (let produit of data) {
             affichage += `<a href="./product.html?id=${produit._id}">
             <article>
@@ -23,4 +24,8 @@ fetch(apiUrl)
         items.innerHTML = affichage;
     })
 
-    .catch((error) => console.error("Error", error))
+    // Affichage erreur
+    .catch((error) => {
+        console.error("Error", error);
+    })
+
