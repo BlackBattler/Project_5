@@ -1,11 +1,11 @@
 /* ****************************** */
-/*       Affichage Produit        */
+/*          Page Produit          */
 /* ****************************** */
 
 // Recuperation de l'ID du produit
 let produitID = new URL(window.location.href).searchParams.get("id");
 
-// Fonction produit
+// Requete API
 async function getProduit(identifiantProduit) {
     let produit = await fetch(`http://localhost:3000/api/products/${identifiantProduit}`);
     return produit.json();
@@ -34,7 +34,7 @@ getProduit(produitID)
 
 
 /* ****************************** */
-/*         Fontion panier         */
+/*        Fonction panier         */
 /* ****************************** */
 
 // Fonction de sauvegarde du panier
@@ -42,7 +42,6 @@ function savePanier(panier) {
     localStorage.setItem("panier", JSON.stringify(panier));
 }
 
-//
 function getPanier() {
     let panier = localStorage.getItem("panier");
     if (panier == null) {

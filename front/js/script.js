@@ -1,18 +1,18 @@
-// Declaration des variables
-const apiUrl = "http://localhost:3000/api/products";
-let affichage = "";
+/* ****************************** */
+/*          Page Accueil          */
+/* ****************************** */
 
-// Recuperation des donnees de l'API
-fetch(apiUrl)
+// Requete API
+async function getProduit(){
+    let produitListe = await fetch ("http://localhost:3000/api/products");
+    return produitListe.json();
+}
 
-    .then((response) => response.json())
-
-    // 
-    .then((data) => {
-        console.table(data);
-
+getProduit()
+    .then((produitListe) => {
+        let affichage = "";
         // Affichage des produits
-        for (let produit of data) {
+        for (let produit of produitListe) {
             affichage += `<a href="./product.html?id=${produit._id}">
             <article>
             <img src="${produit.imageUrl}" alt="${produit.altTxt}">
