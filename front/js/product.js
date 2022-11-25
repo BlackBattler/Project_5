@@ -38,7 +38,7 @@ getProduit(produitID)
 /* ****************************** */
 
 // Fonction de sauvegarde du panier
-function savePanier(panier) {
+function fSavePanier(panier) {
     localStorage.setItem("panier", JSON.stringify(panier));
 }
 
@@ -71,8 +71,8 @@ addToCart.addEventListener("click", () => {
             panier.push(produit);
         }
         window.alert(`Votre commande  de ${quantity.value} ${title.innerHTML} ${colors.value} est ajoutee au panier`)
-        savePanier(panier);
+        fSavePanier(panier);
     } else {
-        window.alert(`Veuillez choisir votre couleur et une quantité entre 1 et 100 avant de l'ajouter au panier`)
+        window.alert(`Veuillez choisir une couleur et une quantité entre 1 et 100 avant de l'ajouter au panier`)
     }
 })
