@@ -128,12 +128,87 @@ function fTotalPrix(panier) {
     for (i = 0; i < panier.length; i++) {
         let quantity = panier[i].quantity;
         getProduit(panier[i].id)
-        .then(produit => {
-            totalPrix += Number(produit.price) * Number(quantity);
-            document.querySelector("#totalPrice").innerHTML = totalPrix;
-        })
+            .then(produit => {
+                totalPrix += Number(produit.price) * Number(quantity);
+                document.querySelector("#totalPrice").innerHTML = totalPrix;
+            })
 
     }
 }
 
 fDisplayPanier(panier);
+
+
+// -----------------------------------------------------------------
+// Formulaire de commande
+// -----------------------------------------------------------------
+
+// Declaration Variables
+let firstNameCheck = false;
+let lastNameCheck = false;
+let addressCheck = false;
+let cityCheck = false;
+let emailCheck = false;
+let addressRegExp = new RegExp("^[0-9]{1,5}(?:(?:[,. ]){1}[-a-zA-Zàâäéèêëïîôöùûüç]+)+");
+let emailRegExp = new RegExp("^[a-z0-9.-_]+[@]{1}[a-z0-9.-_]+[.]{1}[a-z]{2,10}$");
+let charRegExp = new RegExp("^[a-zA-Z ,.'-]+$");
+
+// -----------------------------------------------------------------
+// Fonction de verification de saisie
+// -----------------------------------------------------------------
+function inputCheck(input, regExp, errorMsg, msg) {
+    if (regExp.test(input.value)) {
+        errorMsg.innerHTML = "";
+    }
+    else {
+        errorMsg.innerHTML = "Veuillez saisir " + msg;
+    }
+}
+
+// -----------------------------------------------------------------
+// Verification des champs du formulaire
+// -----------------------------------------------------------------
+firstName.addEventListener('change', () => {
+    inputCheck(firstName, charRegExp, firstNameErrorMsg, "un prénom");
+    if (firstNameErrorMsg.innerHTML != '') {
+        firstNameCheck = true;
+    } else {
+        firstNameCheck = false;
+    }
+})
+lastName.addEventListener('change', () => {
+    inputCheck(lastName, charRegExp, lastNameErrorMsg, "un nom");
+    if (lastNameErrorMsg.innerHTML != '') {
+        lastNameCheck = true;
+    } else {
+        lastNameCheck = false;
+    }
+})
+address.addEventListener('change', () => {
+    inputCheck(address, addressRegExp, addressErrorMsg, "une adresse (Exemple : 10 quai de la charente)");
+    if (addressErrorMsg.innerHTML != '') {
+        addressCheck = true;
+    } else {
+        addressCheck = false;
+    }
+})
+city.addEventListener('change', () => {
+    inputCheck(city, charRegExp, cityErrorMsg, "une ville (Exemple : Paris)");
+    if (cityErrorMsg.innerHTML != '') {
+        cityCheck = true;
+    } else {
+        cityCheck = false;
+    }
+})
+email.addEventListener('change', () => {
+    inputCheck(email, emailRegExp, emailErrorMsg, "un e-mail (Exemple : exemple@gmail.com)");
+    if (emailErrorMsg.innerHTML != '') {
+        emailCheck = true;
+    } else {
+        emailCheck = false;
+    }
+})
+
+// -----------------------------------------------------------------
+// Bouton de validation de commande
+// -----------------------------------------------------------------
