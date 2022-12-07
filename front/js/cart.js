@@ -168,47 +168,82 @@ function inputCheck(input, regExp, errorMsg, msg) {
 // -----------------------------------------------------------------
 // Verification des champs du formulaire
 // -----------------------------------------------------------------
-firstName.addEventListener('change', () => {
+firstName.addEventListener("change", () => {
     inputCheck(firstName, charRegExp, firstNameErrorMsg, "un prénom");
     if (firstNameErrorMsg.innerHTML != '') {
-        firstNameCheck = true;
-    } else {
         firstNameCheck = false;
+    } else {
+        firstNameCheck = true;
     }
 })
-lastName.addEventListener('change', () => {
+lastName.addEventListener("change", () => {
     inputCheck(lastName, charRegExp, lastNameErrorMsg, "un nom");
     if (lastNameErrorMsg.innerHTML != '') {
-        lastNameCheck = true;
-    } else {
         lastNameCheck = false;
+    } else {
+        lastNameCheck = true;
     }
 })
-address.addEventListener('change', () => {
+address.addEventListener("change", () => {
     inputCheck(address, addressRegExp, addressErrorMsg, "une adresse (Exemple : 10 quai de la charente)");
     if (addressErrorMsg.innerHTML != '') {
-        addressCheck = true;
-    } else {
         addressCheck = false;
+    } else {
+        addressCheck = true;
     }
 })
-city.addEventListener('change', () => {
+city.addEventListener("change", () => {
     inputCheck(city, charRegExp, cityErrorMsg, "une ville (Exemple : Paris)");
     if (cityErrorMsg.innerHTML != '') {
-        cityCheck = true;
-    } else {
         cityCheck = false;
+    } else {
+        cityCheck = true;
     }
 })
-email.addEventListener('change', () => {
-    inputCheck(email, emailRegExp, emailErrorMsg, "un e-mail (Exemple : exemple@gmail.com)");
+email.addEventListener("change", () => {
+    inputCheck(email, emailRegExp, emailErrorMsg, "un e-mail (Exemple : kanap@gmail.com)");
     if (emailErrorMsg.innerHTML != '') {
-        emailCheck = true;
-    } else {
         emailCheck = false;
+    } else {
+        emailCheck = true;
     }
 })
 
 // -----------------------------------------------------------------
 // Bouton de validation de commande
 // -----------------------------------------------------------------
+order.addEventListener("click", (event) => {
+    if (firstNameCheck == true && lastNameCheck == true && addressCheck == true && cityCheck == true && emailCheck == true && panier.length != 0) {
+        let produitIDArray = [];
+        for (let i = 0; i < panier.length; i++) {
+            produitIDArray.push(panier[i].id);
+        }
+
+        let panierClient = {
+            contact: {
+                "firstName": firstName.value,
+                "lastName": lastName.value,
+                "address": address.value,
+                "city": city.value,
+                "email": email.value,
+            },
+            "products": produitIDArray,
+        };
+
+        fetch('http://localhost:3000/api/products/order', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(panierClient)
+        })
+
+            .then((res) => res.json())
+            .then((data) => {
+                document.location.href = `confirmation.html?orderId=${data.orderId}`;
+            })
+            .catch(err => {
+                console.log("Erreur de traitement de la commande")
+            })
+    }
+})
