@@ -1,147 +1,159 @@
-/* ****************************** */
-/*          Page Panier           */
-/* ****************************** */
+// **************************************************
+// **********     Page Panier           
+// **************************************************
 
-// Variables
-let panier = getPanier();
+// --------------------------------------------------
+// Fonction principale
+// --------------------------------------------------
 
-// -----------------------------------------------------------------
-// Requete API
-// -----------------------------------------------------------------
-async function getProduit(identifiantProduit) {
-    let produitListe = await fetch(`http://localhost:3000/api/products/${identifiantProduit}`);
-    return produitListe.json();
+const monPanier = fGetPanier();
+console.log(monPanier);
+
+(function () {
+    monPanier.forEach((dataPanier) => fDisplayPanier(dataPanier))
+
+})()
+
+// --------------------------------------------------
+// Affichage des produits du panier
+// --------------------------------------------------
+
+function fDisplayPanier(dataPanier) {
+    const article = fMakeArticle(dataPanier);
+    const imageDiv = fMakeImageDiv(dataPanier);
+    article.appendChild(imageDiv);
+    const itemContentDiv = fMakeItemContent(dataPanier);
+    article.appendChild(itemContentDiv);
+    fDisplayArticle(article);
 }
 
-function getPanier() {
-    let panier = localStorage.getItem("panier");
-    if (panier == null) {
+// --------------------------------------------------
+// Utilisation de createElement
+// --------------------------------------------------
+function fMakeArticle(dataPanier) {
+    const article = document.createElement("article");
+    article.classList.add("cart__item");
+    article.dataset.id = dataPanier.id;
+    article.dataset.color = dataPanier.color;
+
+    return article
+}
+
+function fDisplayArticle(article) {
+    document.querySelector("#cart__items").appendChild(article);
+}
+
+function fMakeImageDiv(dataPanier) {
+    const div = document.createElement("div");
+    div.classList.add("cart__item__img")
+
+    const image = document.createElement("img");
+    image.src = dataPanier.imageUrl;
+    image.alt = dataPanier.altTxt;
+    div.appendChild(image);
+
+    return div
+}
+
+function fMakeItemContent(dataPanier) {
+    const divItemContent = document.createElement("div");
+    divItemContent.classList.add("cart__item__content");
+
+    const divDescription = fMakeContentDescription(dataPanier);
+    divItemContent.appendChild(divDescription);
+
+    const divSetting = fMakeContentSetting(dataPanier);
+    divItemContent.appendChild(divSetting);
+
+    return divItemContent
+}
+
+function fMakeContentDescription(dataPanier) {
+    const divDescription = document.createElement("div");
+    divDescription.classList.add("cart__item__content__description");
+
+    const name = document.createElement("h2");
+    name.textContent = dataPanier.name;
+    divDescription.appendChild(name);
+
+    const color = document.createElement("p");
+    color.textContent = dataPanier.color;
+    divDescription.appendChild(color);
+
+    const price = document.createElement("p");
+    price.textContent = dataPanier.price + " €";
+    divDescription.appendChild(price);
+
+    return divDescription
+}
+
+function fMakeContentSetting(dataPanier) {
+    const settings = document.createElement("div");
+    settings.classList.add("cart__item__content__settings");
+
+    fSettingQuantity(settings, dataPanier);
+    fSettingDelete(settings, dataPanier);
+
+    return settings
+}
+
+function fSettingQuantity(settings, dataPanier) {
+    const divQuantity = document.createElement("div");
+    divQuantity.classList.add("cart__item__content__settings__quantity");
+
+    const quantity = document.createElement("p");
+    quantity.textContent = "Qté : ";
+    divQuantity.appendChild(quantity);
+
+    const input = document.createElement("input");
+    input.type = "number";
+    input.classList.add("itemQuantity");
+    input.name = "itemQuantity";
+    input.min = "1";
+    input.max = "100";
+    input.value = dataPanier.quantity;
+
+    divQuantity.appendChild(input);
+    settings.appendChild(divQuantity);
+}
+
+function fSettingDelete(settings, dataPanier) {
+    const divDelete = document.createElement("div");
+    divDelete.classList.add("cart__item__content__settings__delete");
+
+    const supprimer = document.createElement("p");
+    supprimer.textContent = "Supprimer";
+    divDelete.appendChild(supprimer);
+    settings.appendChild(divDelete);
+}
+
+// --------------------------------------------------
+// Fonction Changement de Quantite
+// --------------------------------------------------
+
+
+
+// --------------------------------------------------
+// Fonction Panier
+// --------------------------------------------------
+
+function fSavePanier(dataPanier) {
+    localStorage.setItem("cart", JSON.stringify(dataPanier));
+}
+
+function fGetPanier() {
+    const dataPanier = localStorage.getItem("cart");
+    if (dataPanier == null) {
         return [];
     } else {
-        return JSON.parse(panier);
+        return JSON.parse(dataPanier);
     }
 }
 
-function fSavePanier(panier) {
-    localStorage.setItem("panier", JSON.stringify(panier));
-}
 
-// -----------------------------------------------------------------
-// Affichage des produits du panier
-// -----------------------------------------------------------------
-function fDisplayPanier(panier) {
-    panier = getPanier();
-    let affichage = "";
-    for (let i = 0; i < panier.length; i++) {
-        getProduit(panier[i].id)
-            .then(produit => {
-                affichage += `<article class="cart__item" data-id="${panier[i].id}" data-color="${panier[i].color}">
-                <div class="cart__item__img">
-                <img src="${produit.imageUrl}" alt="${produit.altTxt}">
-                </div>
-                <div class="cart__item__content">
-                <div class="cart__item__content__description">
-                <h2>${produit.name}</h2>
-                <p>${panier[i].color}</p>
-                <p>${produit.price * panier[i].quantity} €</p>
-                </div>
-                <div class="cart__item__content__settings">
-                <div class="cart__item__content__settings__quantity">
-                <p>Qté : </p>
-                <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${panier[i].quantity}">
-                </div>
-                <div class="cart__item__content__settings__delete">
-                <p class="deleteItem">Supprimer</p>
-                </div>
-                </div>
-                </div>
-                </article>`;
-                cart__items.innerHTML = affichage;
-
-                // -----------------------------------------------------------------
-                // Fonction de modification du panier
-                // -----------------------------------------------------------------
-                let modificationArticle = document.getElementsByClassName("itemQuantity");
-
-                for (i = 0; i < modificationArticle.length; i++) {
-                    modificationArticle[i].addEventListener("change", function changeQuantite() {
-
-                        let produitID = this.closest("article").dataset.id;
-                        let produitCouleur = this.closest("article").dataset.color;
-                        let trouveIndex = panier.findIndex(p => (p.id == produitID) && (p.color == produitCouleur));
-
-                        if ((panier[trouveIndex].quantity != this.value) && (this.value >= 1 && this.value < 100)) {
-                            panier[trouveIndex].quantity = this.value;
-
-                        } else {
-                            this.value = 100;
-                            panier[trouveIndex].quantity = 100;
-                            window.alert(`Vous ne pouvez commander qu'une quantite maximum de 100 par produit et couleur`)
-                        }
-
-                        fSavePanier(panier);
-                        fTotalArticle(panier);
-                        fTotalPrix(panier);
-                    });
-                }
-
-                // -----------------------------------------------------------------
-                // Fonction de suppression d'un article
-                // -----------------------------------------------------------------
-                let suppressionArticle = document.getElementsByClassName("deleteItem");
-
-                for (i = 0; i < suppressionArticle.length; i++) {
-                    suppressionArticle[i].addEventListener("click", function supprimeProduit() {
-
-                        let produitID = this.closest("article").dataset.id;
-                        let produitCouleur = this.closest("article").dataset.color;
-                        let trouveIndex = panier.findIndex(p => (p.id == produitID) && (p.color == produitCouleur));
-
-                        panier.splice(trouveIndex, 1);
-                        fSavePanier(panier);
-                        fDisplayPanier(panier);
-                    })
-                }
-            })
-    }
-    fTotalArticle(panier)
-    fTotalPrix(panier)
-}
-
-// -----------------------------------------------------------------
-// Fonction calcul du total d'article
-// -----------------------------------------------------------------
-function fTotalArticle(panier) {
-    let totalArticle = 0;
-    for (i = 0; i < panier.length; i++) {
-        totalArticle += Number(panier[i].quantity);
-    }
-    document.querySelector("#totalQuantity").innerHTML = totalArticle;
-}
-
-
-// -----------------------------------------------------------------
-// Fonction calcul du prix total
-// -----------------------------------------------------------------
-function fTotalPrix(panier) {
-    let totalPrix = 0;
-    for (i = 0; i < panier.length; i++) {
-        let quantity = panier[i].quantity;
-        getProduit(panier[i].id)
-            .then(produit => {
-                totalPrix += Number(produit.price) * Number(quantity);
-                document.querySelector("#totalPrice").innerHTML = totalPrix;
-            })
-
-    }
-}
-
-fDisplayPanier(panier);
-
-
-// -----------------------------------------------------------------
+// --------------------------------------------------
 // Formulaire de commande
-// -----------------------------------------------------------------
+// --------------------------------------------------
 
 // Declaration Variables
 let firstNameCheck = false;
@@ -153,9 +165,9 @@ let addressRegExp = new RegExp("^[0-9]{1,5}(?:(?:[,. ]){1}[-a-zA-Zàâäéèêë
 let emailRegExp = new RegExp("^[a-z0-9.-_]+[@]{1}[a-z0-9.-_]+[.]{1}[a-z]{2,10}$");
 let charRegExp = new RegExp("^[a-zA-Z ,.'-]+$");
 
-// -----------------------------------------------------------------
+// --------------------------------------------------
 // Fonction de verification de saisie
-// -----------------------------------------------------------------
+// --------------------------------------------------
 function inputCheck(input, regExp, errorMsg, msg) {
     if (regExp.test(input.value)) {
         errorMsg.innerHTML = "";
@@ -165,9 +177,9 @@ function inputCheck(input, regExp, errorMsg, msg) {
     }
 }
 
-// -----------------------------------------------------------------
+// --------------------------------------------------
 // Verification des champs du formulaire
-// -----------------------------------------------------------------
+// --------------------------------------------------
 firstName.addEventListener("change", () => {
     inputCheck(firstName, charRegExp, firstNameErrorMsg, "un prénom");
     if (firstNameErrorMsg.innerHTML != '') {
@@ -209,14 +221,14 @@ email.addEventListener("change", () => {
     }
 })
 
-// -----------------------------------------------------------------
+// --------------------------------------------------
 // Bouton de validation de commande
-// -----------------------------------------------------------------
+// --------------------------------------------------
 order.addEventListener("click", (event) => {
     if (firstNameCheck == true && lastNameCheck == true && addressCheck == true && cityCheck == true && emailCheck == true && panier.length != 0) {
         let produitIDArray = [];
-        for (let i = 0; i < panier.length; i++) {
-            produitIDArray.push(panier[i].id);
+        for (let i = 0; i < dataPanier.length; i++) {
+            produitIDArray.push(dataPanier[i].id);
         }
 
         let panierClient = {
