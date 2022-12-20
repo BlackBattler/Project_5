@@ -14,6 +14,15 @@ console.log(monPanier);
 
 })()
 
+function fGetPanier() {
+    const dataPanier = localStorage.getItem("cart");
+    if (dataPanier == null) {
+        return [];
+    } else {
+        return JSON.parse(dataPanier);
+    }
+}
+
 // --------------------------------------------------
 // Affichage des produits du panier
 // --------------------------------------------------
@@ -25,6 +34,9 @@ function fDisplayPanier(dataPanier) {
     const itemContentDiv = fMakeItemContent(dataPanier);
     article.appendChild(itemContentDiv);
     fDisplayArticle(article);
+    fDisplayTotalQuantity();
+    fDisplayTotalPrice();
+
 }
 
 // --------------------------------------------------
@@ -81,7 +93,7 @@ function fMakeContentDescription(dataPanier) {
     divDescription.appendChild(color);
 
     const price = document.createElement("p");
-    price.textContent = dataPanier.price + " €";
+    price.textContent = dataPanier.price * dataPanier.quantity + " €";
     divDescription.appendChild(price);
 
     return divDescription
@@ -128,26 +140,42 @@ function fSettingDelete(settings, dataPanier) {
 }
 
 // --------------------------------------------------
+// Calcul du quantite article et le prix total
+// --------------------------------------------------
+function fDisplayTotalQuantity() {
+    const totalQuantity = document.querySelector("#totalQuantity");
+    const total = monPanier.reduce((total, dataPanier) => total + dataPanier.quantity, 0);
+    totalQuantity.textContent = total;
+}
+
+function fDisplayTotalPrice() {
+    const totalPrice = document.querySelector("#totalPrice");
+    const total = monPanier.reduce((total, dataPanier) => total + dataPanier.price * dataPanier.quantity, 0)
+    totalPrice.textContent = total;
+}
+
+// --------------------------------------------------
 // Fonction Changement de Quantite
 // --------------------------------------------------
+function updateQuantityAndPrice(dataPanier) {
+    const panier = document.querySelector(".cart__item");
+
+    panier.forEach((panier) => {
+        panier.addEventListener("change", (eq) => {
+            for (article of dataPanier)
+                if(article._id === panier.dataset.id && cart.dataset.couleur === article.couleur) {
+                    article.qu
+                }
+        })
+    })
 
 
-
-// --------------------------------------------------
-// Fonction Panier
-// --------------------------------------------------
+    fDisplayTotalQuantity();
+    fDisplayTotalPrice();
+}
 
 function fSavePanier(dataPanier) {
     localStorage.setItem("cart", JSON.stringify(dataPanier));
-}
-
-function fGetPanier() {
-    const dataPanier = localStorage.getItem("cart");
-    if (dataPanier == null) {
-        return [];
-    } else {
-        return JSON.parse(dataPanier);
-    }
 }
 
 
