@@ -124,6 +124,7 @@ function fSettingQuantity(settings, dataPanier) {
     input.min = "1";
     input.max = "100";
     input.value = dataPanier.quantity;
+    input.addEventListener("input", () => fUpdateItemQuantite(dataPanier.id, dataPanier.color, input.value));
 
     divQuantity.appendChild(input);
     settings.appendChild(divQuantity);
@@ -157,26 +158,46 @@ function fDisplayTotalPrice() {
     totalPrice.textContent = total;
 }
 
-
 // --------------------------------------------------
 // Fonction Changement de quantite
 // --------------------------------------------------
+
+function fUpdateItemQuantite(itemIden, itemCouleur, itemValeur) {
+    for (let i = 0; i < monPanier.length; i++) {
+        if (monPanier[i].id == itemIden && monPanier[i].color == itemCouleur) {
+            monPanier[i].quantity = itemValeur;
+            break;
+        }
+    }
+    fSavePanier(monPanier);
+    fDisplayTotalQuantity();
+    fDisplayTotalPrice();
+}
 
 // --------------------------------------------------
 // Fonction de suppression d'article
 // --------------------------------------------------
 
-function fDeleteItem(itemID, itemColor, dataPanier) {
-    console.log("delete");
+function fDeleteItem(itemIden, itemCouleur) {
     let numTrouve;
 
-    
-    for (let i = 0; i < monPanier.lenght; i++) {
-        if (monPanier[i].id == itemID && monPanier[i].color == itemColor) {
+    for (let i = 0; i < monPanier.length; i++) {
+        if (monPanier[i].id == itemIden && monPanier[i].color == itemCouleur) {
             numTrouve = i;
             break;
         }
     }
+
     monPanier.splice(numTrouve, 1);
+    console.log("Item delete : " + itemIden + " " + itemCouleur);
     fSavePanier(monPanier);
+    fDeleteArticle(itemIden, itemCouleur);
+    fDisplayTotalQuantity();
+    fDisplayTotalPrice();
+}
+
+function fDeleteArticle(itemIden, itemCouleur) {
+    const articleToDelete = document.querySelector(
+        `article[data-id="${itemIden}"][data-color="${itemCouleur}"]`);
+    articleToDelete.remove();
 }
