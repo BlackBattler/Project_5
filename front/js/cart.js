@@ -165,7 +165,8 @@ function fDisplayTotalPrice() {
 function fUpdateItemQuantite(itemIden, itemCouleur, itemValeur) {
     for (let i = 0; i < monPanier.length; i++) {
         if (monPanier[i].id == itemIden && monPanier[i].color == itemCouleur) {
-            monPanier[i].quantity = itemValeur;
+            monPanier[i].quantity = Number(itemValeur);
+            
             break;
         }
     }
